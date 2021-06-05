@@ -1,0 +1,6 @@
+<p><b id="stem">{{Stem}}</b></p>
+
+<audio controls>
+    <source src={{Speech}} type="audio/mpeg">
+    Anki does not support the Audio tag.
+</audio>

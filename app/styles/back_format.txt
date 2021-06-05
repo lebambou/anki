@@ -1,0 +1,26 @@
+<p><b id="stem">{{Stem}}</b><div id="ipa">{{IPA}}</div></p>
+
+<hr>
+
+<p><b id="word">{{Word_1}}</b> <span id="pos">{{POS_1}}</span></p>
+<p>{{Def_1}}</p>
+<p><i>{{Sent_1}}</i></p>
+
+<p><b id="word">{{Word_2}}</b> <span id="pos">{{POS_2}}</span></p>
+<p>{{Def_2}}</p>
+<p><i>{{Sent_2}}</i></p>
+
+<p><b id="word">{{Word_3}}</b> <span id="pos">{{POS_3}}</span></p>
+<p>{{Def_3}}</p>
+<p><i>{{Sent_3}}</i></p>
+
+<p><b id="word">{{Word_4}}</b> <span id="pos">{{POS_4}}</span></p>
+<p>{{Def_4}}</p>
+<p><i>{{Sent_4}}</i></p>
+
+<img src={{Pic}} alt="Image failed to load.">
+
+<audio controls>
+    <source src={{Speech}} type="audio/mpeg">
+    Anki does not support the Audio tag.
+</audio>
