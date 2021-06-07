@@ -21,7 +21,7 @@ from bs4 import BeautifulSoup as bs
 import lxml
 from time import sleep
 
-class k2a:    
+class k2a:
     # %% grab headliner from CNRTL
     def grabInfo(stem): # will have df value as argument
         index = 1
@@ -32,12 +32,12 @@ class k2a:
                                       "def_1", "def_2", "def_3", "def_4",
                                       "sent_1", "sent_2", "sent_3", "sent_4",
                                       "ipa", "pic", "speech"])
-        
+
         # get words, part of speech, definition, and sentence from CNRTL
         # create URL for search
         # TODO catch when URL fails
-        url_str = "https://www.cnrtl.fr/definition/" + stem  
-              
+        url_str = "https://www.cnrtl.fr/definition/" + stem
+
         # verify valid page
         result = requests.get(url_str)
         if result.status_code != 200:
@@ -45,8 +45,8 @@ class k2a:
             return c_out
 
         soup = bs(result.content, 'lxml')
-        
-        
+
+
         # super hacky, TODO fix this
         # b = type(soup.findAll(class_ = "nonsense"))
         words_out = soup.select('span[class^=tlf_cmot]')
@@ -62,7 +62,7 @@ class k2a:
 
             word_ = words_out[i]
             pos_  = words_out[i].find_next(class_ = "tlf_ccode")
-            def_  = words_out[i].find_next(class_ = "tlf_cdefinition")
+            def_  = words_out[i].find_next(class  = "tlf_cdefinition")
             sent_ = words_out[i].find_next(class_ = "tlf_cexemple")
 
             if word_ is not None:
@@ -84,7 +84,7 @@ class k2a:
         if result.status_code != 200:
             print("No Wiktionary Link") # this only happens with no connection
             return c_out
-        
+
         soup = bs(result.content, "lxml")
 
         if soup.find(class_="API") is not None:
@@ -94,7 +94,7 @@ class k2a:
             c_out.at[index, "pic"] = soup.find(class_="thumbimage")['src']
 
         if soup.find("source", src=re.compile('//upload.*\.mp3')) is not None:
-            c_out.at[index, "speech"] = soup.find("source", 
+            c_out.at[index, "speech"] = soup.find("source",
                                       src=re.compile('//upload.*\.mp3'))["src"]
 
         c_out.at[index, "input"] = stem
@@ -127,58 +127,58 @@ class k2a:
                 frame = frame.append(k2a.grabInfo(word), ignore_index=True)
                 i += 1
                 print(i)
-        
-            
+
+
             if (i == 500):
                 break
-            
+
         # push the results to csv
         frame.to_csv('word_list.csv', encoding='utf-8-sig', index=False)
-        
+
         return frame
-    
+
     # %% fill cards -> deck -> export to apkg file
-    def buildDeck():
+    def buildDeck(self):
         # fill up a datastructure from the .csv, formatting stuff
         # grab existing word list
-        
+
         if not os.path.exists('word_list.csv'):
             tag = False
             print('File does not exist, execute k2a.updateCSV()')
         else:
             tag = True
             frame = pd.read_csv('word_list.csv')
-        
+
         frame = frame.replace(np.nan, '', regex=True)
-        
+
         # read CSS file for card formatting
         css_file = open('styles/card_style.txt')
         css_str = css_file.read()
         css_file.close()
-        
+
         front_file = open('styles/front_format.txt')
         front_str = front_file.read()
         front_file.close()
-        
+
         back_file = open('styles/back_format.txt')
         back_str = back_file.read()
         back_file.close()
-        
+
         front_file_b = open('styles/front_format_b.txt')
         front_str_b = front_file_b.read()
         front_file_b.close()
-        
+
         back_file_b = open('styles/back_format_b.txt')
         back_str_b = back_file_b.read()
         back_file_b.close()
-        
+
         # %% make a card object with data from each row of dataframe
         # make sure to check for existing card, no repeats important
         my_deck = genanki.Deck(
             1098714909,
             'Français: Vocabulaire'
             )
-        
+
         my_model = genanki.Model(
             2125051572,
             'Autogen Fr Definition Model',
@@ -199,7 +199,7 @@ class k2a:
                 {'name': 'Sent_1'},
                 {'name': 'Sent_2'},
                 {'name': 'Sent_3'},
-                {'name': 'Sent_4'},     
+                {'name': 'Sent_4'},
                 {'name': 'IPA'},
                 {'name': 'Pic'},
                 {'name': 'Speech'}
@@ -216,7 +216,7 @@ class k2a:
                 ],
             css = css_str
             )
-        
+
         for index, row in frame.iterrows():
             my_note = genanki.Note(
                 model = my_model,
@@ -228,7 +228,7 @@ class k2a:
                           row['pos_1'],
                           row['pos_2'],
                           row['pos_3'],
-                          row['pos_4'], 
+                          row['pos_4'],
                           row['def_1'],
                           row['def_2'],
                           row['def_3'],
@@ -243,7 +243,6 @@ class k2a:
                           ]
                 )
             my_deck.add_note(my_note)
-            
+
         # %% export card to anki? should be automatic
         genanki.Package(my_deck).write_to_file('output.apkg')
-        
