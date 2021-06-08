@@ -22,10 +22,17 @@ if result.status_code != 200:
 
 # word_entry = pd.Series()
 
+# start each stem as first titredef
+# start fresh card if pos changes (e.g. beau adj -> noun)
+
+# change all parsing depending on titredef
+# id="fr-nom-x"
+
 
 soup = bs(result.content, "lxml")
 
 stem = soup.main.p.b.text
+# find alternate gender version
 ipa1 = soup.main.p.select("[class~=API]")[0].text
 # find second IPA if available
 ldf1 = soup.main.p.select("[class~=ligne-de-forme]")[0].text
@@ -42,13 +49,19 @@ for item in soup.main.ol.findAll('li'):
     defs1.append(item.text)
 
 defs1 = list(filter(None, defs1))
-
-print(stem)
-print(ipa1)
-print(ldf1)
-print(' '.join(defs1))
+#
+# print(stem)
+# print(ipa1)
+# print(ldf1)
+# print(' '.join(defs1))
 print(' '.join(sents1))
 
+
+# DataFrame struture
+# stem freq audio | word, pos, nms, nms-ipa, nmpl, nmpl-ipa, nfs, nfs-ipa, nfpl, nfpl-ipa,
+#                 | adjm, adjm-ipa, adjf, adjf-ipa,
+#                 | def1, sents1, def2, sents2,...,def30, sents30
+#                 | syns, ants, hypers, hypos, derivs, pic1,...,pic5
 
 # stem | first <p> tag after variants table and images
 # gender |

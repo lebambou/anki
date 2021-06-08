@@ -37,12 +37,6 @@ class WikiParser:
     # parse the page content and put relevant text into slots in pd Series
     # build the Series on the fly
     def parse_page(page):
-        # build pd Series
-        word_entry = pd.Series()
-
-        soup = bs(page.content, "lxml")
-
-        s_stem = soup.select('span')
 
         return True
 
@@ -71,8 +65,14 @@ class WikiParser:
         return True
 
 
+# DataFrame struture
+# stem freq audio | word, pos, nms, nms-ipa, nmpl, nmpl-ipa, nfs, nfs-ipa, nfpl, nfpl-ipa,
+#                 | adjm, adjm-ipa, adjf, adjf-ipa,
+#                 | def1, sents1, def2, sents2,...,def30, sents30
+#                 | syns, ants, hypers, hypos, derivs, pic1,...,pic5
 
 
+# card structure (depricated)
 # stem | first <b> tag after variants table and images
 # freq index
 # [pos VARIANT; pos VARIANT; pos VARIANT; pos VARIANT, pos VARIANT] | first <tbody> class after flextable
