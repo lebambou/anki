@@ -4,7 +4,7 @@
 # import os.path
 # import sqlite3
 import pandas as pd
-# import numpy as np
+import numpy as np
 import requests
 # import genanki
 from bs4 import BeautifulSoup as bs
@@ -13,8 +13,12 @@ import lxml
 
 
 class WikiParser:
-    def __init__(self):
-        return(self)
+    # build a word list from frequency database
+    def get_word_list():
+        file_loc = r"C:\Users\npnew\OneDrive\Documents\dev\k2w2a\app\data\Manulex.xls"
+        df = pd.read_excel(file_loc, index_col=None, na_values=[''], usecols = "A,R")
+        return df
+
 
     # get page content as xml from Wiktionnaire page via the page title
     def get_source(stem):
@@ -29,15 +33,8 @@ class WikiParser:
 
         return result
 
-    # check to make sure it is not a derivative of a parent word
-    # return highest parent word UNLESS given override
-    def find_parent(page):
-        return True
-
-    # parse the page content and put relevant text into slots in pd Series
-    # build the Series on the fly
+    # parse the page content and put relevant text into slots in pd
     def parse_page(page):
-
         return True
 
     # initialize an Anki deck
@@ -60,16 +57,63 @@ class WikiParser:
     def make_sentence(text):
         return True
 
-    # update a .csv file with words from a kindle.db
+    def build_db():
+        list = WikiParser.get_word_list()
+        datab = Database()
+
+        i=0
+
+        for index, row in list.iterrows():
+            i = i + 1
+            datab.add_page(Page(row['LEMMAS']))
+            if i == 30:
+                break
+
+        print(datab.db)
+
+    # update a .csv file with words from a Database
     def update_csv(file):
         return True
 
+# object to hold all page information
+class Page:
+    def __init__(self, word):
+        n_variants = 10
+        n_defs = 30
+        n_sents = 10
+        n_pics = 6
 
-# DataFrame struture
-# stem freq audio | word, pos, nms, nms-ipa, nmpl, nmpl-ipa, nfs, nfs-ipa, nfpl, nfpl-ipa,
-#                 | adjm, adjm-ipa, adjf, adjf-ipa,
-#                 | def1, sents1, def2, sents2,...,def30, sents30
-#                 | syns, ants, hypers, hypos, derivs, pic1,...,pic5
+        stems = np.array([word] * n_variants)
+        total = np.array([x for x in range(0, n_variants)])
+
+        # def-sents is an array of tuples of a definition and one example sentence
+        fields = np.array([
+            'word', 'freq', 'audio', 'pos', 'nsm', 'nms-ipa', 'nmpl', 'nmpl-ipa',
+            'nfs', 'nfs-ipa', 'nfpl', 'nfpl-ipa', 'adjm', 'adjm-ipa', 'adjf',
+            'adjf-ipa', 'defs', 'syns', 'ants', 'hypers', 'hypos', 'derivs', 'pics',
+            'def-sents'
+        ])
+
+        defs = np.array(['def' + str(x) for x in range(0, n_defs)])
+        strs = np.array(['str' + str(x) for x in range(0, n_sents)])
+        pics = np.array(['pic' + str(x) for x in range(0, n_pics)])
+
+        self.data = pd.DataFrame(index=[stems, total], columns=fields)
+        self.stem = word
+
+class Database:
+    def __init__(self):
+        self.db = pd.DataFrame()
+
+    def add_page(self, Page):
+        self.db = pd.concat([self.db, Page.data], axis=0)
+
+    def save_data(self):
+        return self
+
+    def read_data(self):
+        return self
+
 
 
 # card structure (depricated)
