@@ -57,13 +57,6 @@ defs1 = list(filter(None, defs1))
 # print(' '.join(defs1))
 
 
-
-# DataFrame struture
-# [stem freq audio] | word, pos, nms, nms-ipa, nmpl, nmpl-ipa, nfs, nfs-ipa, nfpl, nfpl-ipa,
-#                   | adjm, adjm-ipa, adjf, adjf-ipa,
-#                   | def1, sents1, def2, sents2,...,def30, sents30
-#                   | syns, ants, hypers, hypos, derivs, pic1,...,pic5
-
 # stem | first <p> tag after variants table and images
 # gender |
 # freq index
