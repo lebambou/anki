@@ -37,29 +37,29 @@ class WikiParser:
 
     # parse the page content and put relevant text into slots in pd
     def parse_page(stem, webpage, wordbase):
+
+        o_pic_links = []
+        o_speech_links = []
         soup = bs(webpage.content, "lxml")
-
-
         i = 0
 
         # get all picture links
-        # for pic in soup.findAll(class_='thumbinner'):
-        #     o_pic_links.append(pic.a['href'])
-        #     # print(pic.a['href'])
-        # wordbase.data.loc[(stem, i), 'pics'] = o_pic_links
-        #
-        # if soup.find("source", src=re.compile('//upload.*\.mp3')) is not None:
-        #     o_speech_links.append(soup.find("source",
-        #                               src=re.compile('//upload.*\.mp3'))["src"])
-        #     wordbase.data.loc[(stem, i), 'audio'] = soup.find("source",
-        #                               src=re.compile('//upload.*\.mp3'))["src"]
+        for pic in soup.findAll(class_='thumbinner'):
+            o_pic_links.append(pic.a['href'])
+        wordbase.data.loc[(stem, i), 'pics'] = o_pic_links
+
+        # get first pronunciation link
+        if soup.find("source", src=re.compile('//upload.*\.mp3')) is not None:
+            o_speech_links.append(soup.find("source",
+                                      src=re.compile('//upload.*\.mp3'))["src"])
+            wordbase.data.loc[(stem, i), 'audio'] = soup.find("source",
+                                      src=re.compile('//upload.*\.mp3'))["src"]
 
         # get variations and number versions
         for french in soup.findAll(id=re.compile('fr-')):
             o_var = []
             o_vers = []
-            o_pic_links = []
-            o_speech_links = []
+
             o_gens = []
             o_defs = []
             o_sents = []
@@ -69,128 +69,107 @@ class WikiParser:
             o_hypers = []
             o_hypos = []
 
+            o_nouns = ['ns', 'npl', 'ns-ipa', 'npl-ipa',]
+            o_verbs = ['adjm', 'adjm-ipa', 'adjmp', 'adjmp-ipa', 'adjf',
+                       'adjf-ipa', 'adjfp', 'adjfp-ipa',]
+
             o_var.append(french.text + '\n')
-            ###
-
-            if 'Nom' in french.text:
-                print(french.text)
-
-                # sing vs plurs and ipa
-                item1 = french.parent.parent.find_next_sibling('table')
-                for a in item1.findAll('a'):
-                    o_vers.append(a.text)
-                    # print(a.text)
-
-                # variants
-                if french.parent.parent.find_next_sibling('p').\
-                                    find(class_='ligne-de-forme') is not None:
-                    o_gens.append(french.parent.parent.find_next_sibling('p').\
-                                            find(class_='ligne-de-forme').text)
-
-            elif 'Adj' in french.text:
-                print(french.text)
-
-                # sing vs plurs and ipa
-                item1 = french.parent.parent.find_next_sibling('table')
-                for a in item1.findAll('a'):
-                    o_vers.append(a.text)
-                    # print(a.text)
-
-                # gender
-                if french.parent.parent.find_next_sibling('p').\
-                                    find(class_='ligne-de-forme') is not None:
-                    o_gens.append(french.parent.parent.find_next_sibling('p').\
-                                            find(class_='ligne-de-forme').text)
-
-            elif 'Verbe' in french.text:
-                print(french.text)
-
-                if french.parent.parent.find_next_sibling('p').\
-                                    find(class_='ligne-de-forme') is not None:
-                    o_gens.append(french.parent.parent.find_next_sibling('p').\
-                                  find(class_='ligne-de-forme').text)
-
-            else:
-                print(french.text)
-
-                if french.parent.parent.find_next_sibling('p')\
-                                    .find(class_='ligne-de-forme') is not None:
-                    o_gens.append(french.parent.parent.find_next_sibling('p')\
-                                  .find(class_='ligne-de-forme').text)
-
-            # get defs and sents
-            item2 = french.parent.parent.find_next_sibling('ol')
-            for li in item2.findAll('li'):
-                one_sent_only = True
-                for child in li.findAll('li'):
-
-                    # grab only the first sentence per definition
-                    if one_sent_only:
-                        o_sents.append(child.text)
-
-                        one_sent_only = False
-
-                    # remove sentence from tree so it doesn't add to def
-                    child.decompose()
-
-                # add definition to defs
-                o_defs.append(li.text)
-                # print(li.text)
-
-            nextNode = french.parent.parent
-            while True:
-                nextNode = nextNode.nextSibling
-                try:
-                    tag_name = nextNode.name
-                except AttributeError:
-                    tag_name = None
-                if tag_name == 'h3':
-                    break
-                elif tag_name == 'h4':
-                    item = nextNode.findChildren(id=re.compile('Synonymes'))
-                    for child in item:
-                        if child is not None:
-                            o_syns.append(child.parent.find_next('ul').text)
-                            # print(child.parent.find_next('ul').text)
-                    wordbase.data.loc[(stem, i), 'syns'] = o_syns
-
-                    item = nextNode.findChildren(id=re.compile('Dérivés'))
-                    for child in item:
-                        if child is not None:
-                            o_derivs.append(child.parent.find_next('ul').text)
-                            # print(child.parent.find_next('ul').text)
-                    wordbase.data.loc[(stem, i), 'derivs'] = o_derivs
-
-                    item = nextNode.findChildren(id=re.compile('Antonymes'))
-                    for child in item:
-                        if child is not None:
-                            o_ants.append(child.parent.find_next('ul').text)
-                            # print(child.parent.find_next('ul').text)
-                    wordbase.data.loc[(stem, i), 'ants'] = o_ants
-
-                    item = nextNode.findChildren(id=re.compile('Hyperonymes'))
-                    for child in item:
-                        if child is not None:
-                            o_hypers.append(child.parent.find_next('ul').text)
-                            # print(child.parent.find_next('ul').text)
-                    wordbase.data.loc[(stem, i), 'hypers'] = o_hypers
-
-                    item = nextNode.findChildren(id=re.compile('Hyponymes'))
-                    for child in item:
-                        if child is not None:
-                            o_hypos.append(child.parent.find_next('ul').text)
-                            # print(child.parent.find_next('ul').text)
-                    wordbase.data.loc[(stem, i), 'hypos'] = o_hypos
 
             if len(french.text) > 3:
+
+                if 'Nom' in french.text:
+                    # sing vs plurs and ipa
+                    if french.parent.parent.find_next_sibling('table') is not None:
+
+                        item1 = french.parent.parent.find_next_sibling('table')
+                        for a in item1.findAll('a'):
+                                o_vers.append(a.text)
+
+                    for (ind, out) in zip(o_nouns, o_vers):
+                        wordbase.data.loc[(stem, i), ind] = out
+
+                elif 'Adj' in french.text:
+                    # sing vs plurs and ipa
+                    item1 = french.parent.parent.find_next_sibling('table')
+                    for a in item1.findAll('a'):
+                        o_vers.append(a.text)
+
+                    for (ind, out) in zip(o_verbs, o_vers):
+                        wordbase.data.loc[(stem, i), ind] = out
+
+                else:
+                    if french.parent.parent.find_next_sibling('p').\
+                                                    find(class_='API') is not None:
+                        wordbase.data.loc[(stem, i), 'ns-ipa'] = french.parent.\
+                                    parent.find_next_sibling('p').find(class_='API').text
+
                 wordbase.data.loc[(stem, i), 'pos'] = french.text
+
+                # get defs and sents
+                item2 = french.parent.parent.find_next_sibling('ol')
+                for li in item2.findAll('li'):
+                    one_sent_only = True
+                    for child in li.findAll('li'):
+
+                        # grab only the first sentence per definition
+                        if one_sent_only:
+                            o_sents.append(child.text)
+
+                            one_sent_only = False
+
+                        # remove sentence from tree so it doesn't add to def
+                        child.decompose()
+
+                    # add definition to defs
+                    o_defs.append(li.text)
+
+                wordbase.data.loc[(stem, i), 'defs'] = o_defs
+                wordbase.data.loc[(stem, i), 'sents'] = o_sents
+
+                nextNode = french.parent.parent
+                while True:
+                    nextNode = nextNode.nextSibling
+                    try:
+                        tag_name = nextNode.name
+                    except AttributeError:
+                        tag_name = None
+                    if tag_name == 'h3':
+                        break
+                    elif tag_name == 'h4':
+                        item = nextNode.findChildren(id=re.compile('Synonymes'))
+                        for child in item:
+                            if child is not None:
+                                o_syns.append(child.parent.find_next('ul').text)
+                        wordbase.data.loc[(stem, i), 'syns'] = o_syns
+
+                        item = nextNode.findChildren(id=re.compile('Dérivés'))
+                        for child in item:
+                            if child is not None:
+                                o_derivs.append(child.parent.find_next('ul').text)
+                        wordbase.data.loc[(stem, i), 'derivs'] = o_derivs
+
+                        item = nextNode.findChildren(id=re.compile('Antonymes'))
+                        for child in item:
+                            if child is not None:
+                                o_ants.append(child.parent.find_next('ul').text)
+                        wordbase.data.loc[(stem, i), 'ants'] = o_ants
+
+                        item = nextNode.findChildren(id=re.compile('Hyperonymes'))
+                        for child in item:
+                            if child is not None:
+                                o_hypers.append(child.parent.find_next('ul').text)
+                        wordbase.data.loc[(stem, i), 'hypers'] = o_hypers
+
+                        item = nextNode.findChildren(id=re.compile('Hyponymes'))
+                        for child in item:
+                            if child is not None:
+                                o_hypos.append(child.parent.find_next('ul').text)
+                        wordbase.data.loc[(stem, i), 'hypos'] = o_hypos
+
                 i = i + 1
-
-
 
     # parse a word conjugation page
     def parse_conj(word):
-
         return True
 
     # initialize an Anki deck
@@ -244,8 +223,8 @@ class Page:
 
         # def-sents is an array of tuples of a definition and one example sentence
         fields = np.array([
-            'word', 'freq', 'audio', 'pos', 'ns', 'ns-ipa', 'npl', 'npl-ipa',
-            'adjm', 'adjm-ipa', 'adjf', 'adjf-ipa', 'adjmp', 'adjmp-ipa',
+            'word', 'freq', 'audio', 'pos', 'ns', 'npl', 'ns-ipa', 'npl-ipa',
+            'adjm', 'adjm-ipa', 'adjmp', 'adjmp-ipa', 'adjf', 'adjf-ipa',
             'adjfp', 'adjfp-ipa', 'defs', 'sents', 'syns', 'derivs', 'ants',
             'hypers', 'hypos', 'pics'
         ])
@@ -270,14 +249,42 @@ class Database:
     def read_data(self):
         return self
 
-stem = 'botte'
-website = WikiParser.get_source(stem)
-x = Page(stem)
-WikiParser.parse_page(stem, website, x)
-print(x.data)
-# pdb.set_trace()
-# print(WikiParser.get_word_list())
+# stem = 'botte'
+# website = WikiParser.get_source(stem)
+# x = Page(stem)
+# WikiParser.parse_page(stem, website, x)
+# # print(x.data)
+#
+# stem = 'beau'
+# website = WikiParser.get_source(stem)
+# y = Page(stem)
+# WikiParser.parse_page(stem, website, y)
+# # print(x.data)
+#
+# o_data = Database()
+# o_data.add_page(x)
+# o_data.add_page(y)
+#
+# print(o_data.db)
 
+frame = WikiParser.get_word_list()
+o_data = Database()
+for i in range(1000,1009):
+    print(i)
+    stem = frame.loc[i, 'LEMMAS']
+    print(stem)
+    website = WikiParser.get_source(stem)
+    x = Page(stem)
+    WikiParser.parse_page(stem, website, x)
+    o_data.add_page(x)
+
+
+o_data.db.to_parquet('data/wlist.gzip', compression ='gzip')
+
+
+pframe = pd.read_parquet('data/wlist.gzip')
+
+print(pframe)
 # card structure (depricated)
 # stem | first <b> tag after variants table and images
 # freq index

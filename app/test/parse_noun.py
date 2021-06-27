@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup as bs
 import lxml
 # from time import sleep
 
-stem = 'roger'
+stem = 'beau'
 
 url_str = "https://fr.wiktionary.org/wiki/%s" % stem
 result = requests.get(url_str)
@@ -54,9 +54,6 @@ for french in soup.findAll(id=re.compile('fr-')):
             o_vers.append(a.text)
             # print(a.text)
 
-        # variants
-        if french.parent.parent.find_next_sibling('p').find(class_='ligne-de-forme') is not None:
-            o_gens.append(french.parent.parent.find_next_sibling('p').find(class_='ligne-de-forme').text)
 
     elif 'Adj' in french.text:
         print(french.text)
@@ -67,15 +64,16 @@ for french in soup.findAll(id=re.compile('fr-')):
             o_vers.append(a.text)
             # print(a.text)
 
-        # gender
-        if french.parent.parent.find_next_sibling('p').find(class_='ligne-de-forme') is not None:
-            o_gens.append(french.parent.parent.find_next_sibling('p').find(class_='ligne-de-forme').text)
 
     elif 'Verbe' in french.text:
         print(french.text)
 
-        if french.parent.parent.find_next_sibling('p').find(class_='ligne-de-forme') is not None:
-            o_gens.append(french.parent.parent.find_next_sibling('p').find(class_='ligne-de-forme').text)
+        if french.parent.parent.find_next_sibling('p').\
+                                        find(class_='API') is not None:
+            print(french.parent.parent.find_next_sibling('p').\
+                                            find(class_='API').text)
+
+
 
     else:
         print(french.text)
@@ -154,4 +152,4 @@ if soup.find("source", src=re.compile('//upload.*\.mp3')) is not None:
 # print(o_speech_links)
 #
 # print(o_defs)
-print(o_vers)
+print(o_gens)
