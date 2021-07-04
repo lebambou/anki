@@ -15,33 +15,47 @@ import pdb
 
 class WikiParser:
     # build a word list from frequency database
-    def get_word_list():
+    def get_word_list(self):
         file_loc = r"C:\Users\npnew\OneDrive\Documents\dev\k2w2a\app\data\Manulex.xls"
         df = pd.read_excel(file_loc, index_col=None, na_values=[''],
                             usecols = "A,R")
         return df
 
+    def get_word_parquet(self, file_loc = 'data/Manulex.gzip'):
+        df = pd.read_parquet(file_loc)
+        return df
+
+    def word_list_to_parquet(self):
+        file_loc = r"C:\Users\npnew\OneDrive\Documents\dev\k2w2a\app\data\Manulex.xls"
+        df = pd.read_excel(file_loc, index_col=None, na_values=[''],
+                            usecols = "A,R")
+        df.to_parquet('data/Manulex.gzip', compression ='gzip')
 
     # get page content as xml from Wiktionnaire page via the page title
-    def get_source(stem):
+    def get_source(self, stem):
         # define url
         url_str = "https://fr.wiktionary.org/wiki/%s" % stem
         result = requests.get(url_str)
 
         # check that page exists
         if result.status_code != 200:
-            print("No Wiktionnaire Page for" + stem + ".")
+            print("No Wiktionnaire Page for " + stem + ".")
             return None
 
         return result
 
     # parse the page content and put relevant text into slots in pd
-    def parse_page(stem, webpage, wordbase):
+    def parse_page(self, stem, freq, webpage, wordbase):
+        if webpage is None:
+            return None
 
         o_pic_links = []
         o_speech_links = []
         soup = bs(webpage.content, "lxml")
         i = 0
+
+        # add frequency index first
+        wordbase.data.loc[(stem, i), 'freq'] = freq
 
         # get all picture links
         for pic in soup.findAll(class_='thumbinner'):
@@ -169,30 +183,51 @@ class WikiParser:
                 i = i + 1
 
     # parse a word conjugation page
-    def parse_conj(word):
+    def parse_conj(self, word):
         return True
 
-    # initialize an Anki deck
+    # run the parse over n-length word list and save results to parquet
+    def parse_many(self, wordlist):
+        o_data = Database()
+        for i in range(1170,1200):
+            print(i)
+            stem, freq = wordlist.loc[i, ['LEMMAS', 'G1-5 U']]
+            print(stem + ' ' + str(freq))
+            website = self.get_source(stem)
+            x = Page(stem)
+            self.parse_page(stem, freq, website, x)
+            o_data.add_page(x)
+
+        o_data.db.to_parquet('data/wlist.gzip', compression ='gzip')
+
+
+        pframe = pd.read_parquet('data/wlist.gzip')
+
+        print(pframe)
+
+        return pframe
+
+    # make a deck out of a DataFrame
     def make_deck(self):
         return True
 
     # write an Anki deck to a file
-    def write_deck(deck):
+    def write_deck(self, deck):
         return True
 
     # create single comp/prod flashcard from pd dataframe
-    def make_flashcard(frame):
+    def make_flashcard(self, frame):
         return True
 
     # create single conjugation flashcard from pd DataFrame
-    def make_conjugation(frame):
+    def make_conjugation(self, frame):
         return True
 
     # create sentence completion card from text
-    def make_sentence(text):
+    def make_sentence(self, text):
         return True
 
-    def build_db():
+    def build_db(self):
         list = WikiParser.get_word_list()
         datab = Database()
 
@@ -214,24 +249,16 @@ class WikiParser:
 class Page:
     def __init__(self, word):
         n_variants = 10
-        n_defs = 30
-        n_sents = 10
-        n_pics = 6
 
         stems = np.array([word] * n_variants)
         total = np.array([x for x in range(0, n_variants)])
 
-        # def-sents is an array of tuples of a definition and one example sentence
         fields = np.array([
-            'word', 'freq', 'audio', 'pos', 'ns', 'npl', 'ns-ipa', 'npl-ipa',
+            'freq', 'audio', 'pos', 'ns', 'npl', 'ns-ipa', 'npl-ipa',
             'adjm', 'adjm-ipa', 'adjmp', 'adjmp-ipa', 'adjf', 'adjf-ipa',
             'adjfp', 'adjfp-ipa', 'defs', 'sents', 'syns', 'derivs', 'ants',
             'hypers', 'hypos', 'pics'
         ])
-
-        defs = np.array(['def' + str(x) for x in range(0, n_defs)])
-        strs = np.array(['str' + str(x) for x in range(0, n_sents)])
-        pics = np.array(['pic' + str(x) for x in range(0, n_pics)])
 
         self.data = pd.DataFrame(index=[stems, total], columns=fields)
         self.stem = word
@@ -248,6 +275,14 @@ class Database:
 
     def read_data(self):
         return self
+
+wp = WikiParser()
+frame = wp.get_word_parquet(file_loc='data/wlist.gzip')
+print(frame)
+
+# test = WikiParser()
+# frame = test.get_word_parquet()
+# test.parse_many(frame)
 
 # stem = 'botte'
 # website = WikiParser.get_source(stem)
@@ -267,41 +302,22 @@ class Database:
 #
 # print(o_data.db)
 
-frame = WikiParser.get_word_list()
-o_data = Database()
-for i in range(1000,1009):
-    print(i)
-    stem = frame.loc[i, 'LEMMAS']
-    print(stem)
-    website = WikiParser.get_source(stem)
-    x = Page(stem)
-    WikiParser.parse_page(stem, website, x)
-    o_data.add_page(x)
 
-
-o_data.db.to_parquet('data/wlist.gzip', compression ='gzip')
-
-
-pframe = pd.read_parquet('data/wlist.gzip')
-
-print(pframe)
-# card structure (depricated)
-# stem | first <b> tag after variants table and images
-# freq index
-# [pos VARIANT; pos VARIANT; pos VARIANT; pos VARIANT, pos VARIANT] | first <tbody> class after flextable
-# IPA | use from <tbody> class, same as above
-# pronunciation audio | scrape all .mp3 files
-# ====================
-# common 1 | common 2 | count number of #fr-nom-x tags
-# --------------------
-# def 1      def 1    | <ol> objects
-# sent 1     sent 1   | <ul> objects
-# def 2      def 2
-# sent 2     sent 2
-# etc        etc
+# frame = WikiParser.get_word_parquet()
+# o_data = Database()
+# for i in range(1000,1100):
+#     print(i)
+#     stem = frame.loc[i, 'LEMMAS']
+#     print(stem)
+#     website = WikiParser.get_source(stem)
+#     x = Page(stem)
+#     WikiParser.parse_page(stem, website, x)
+#     o_data.add_page(x)
 #
-# img        img      | <thumbinner> tags
-# syns       syns     | id="Synonyms"
-# derivs     derivs (as links) | id="Dérivés"
-# hyperonyms          | id="Hyperonyms"
-# hyponyms            | id="Hyponyms"
+#
+# o_data.db.to_parquet('data/wlist.gzip', compression ='gzip')
+#
+#
+# pframe = pd.read_parquet('data/wlist.gzip')
+#
+# print(pframe)
