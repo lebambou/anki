@@ -119,6 +119,7 @@ class k2a:
         i = 1
         for word in df['stem']:
             print(i)
+
             # refill everything if word_list.csv is missing
             if tag == False:
                 frame = frame.append(k2a.grabInfo(word), ignore_index=True)
@@ -175,12 +176,12 @@ class k2a:
         # %% make a card object with data from each row of dataframe
         # make sure to check for existing card, no repeats important
         my_deck = genanki.Deck(
-            9379226097,
-            'Français: Vocabulaire'
+            5800457367,
+            'Français: Vocabulaire v2.0'
             )
 
         my_model = genanki.Model(
-            1178718032 ,
+            8756083568,
             'Autogen Fr Definition Model',
             fields = [
                 {'name': 'Stem'},
@@ -208,6 +209,46 @@ class k2a:
                 {'name': 'Sent_6'},
                 {'name': 'Sent_7'},
                 {'name': 'Sent_8'},
+                {'name': 'Syns_1'},
+                {'name': 'Syns_2'},
+                {'name': 'Syns_3'},
+                {'name': 'Syns_4'},
+                {'name': 'Syns_5'},
+                {'name': 'Syns_6'},
+                {'name': 'Syns_7'},
+                {'name': 'Syns_8'},
+                {'name': 'Ants_1'},
+                {'name': 'Ants_2'},
+                {'name': 'Ants_3'},
+                {'name': 'Ants_4'},
+                {'name': 'Ants_5'},
+                {'name': 'Ants_6'},
+                {'name': 'Ants_7'},
+                {'name': 'Ants_8'},
+                {'name': 'Ders_1'},
+                {'name': 'Ders_2'},
+                {'name': 'Ders_3'},
+                {'name': 'Ders_4'},
+                {'name': 'Ders_5'},
+                {'name': 'Ders_6'},
+                {'name': 'Ders_7'},
+                {'name': 'Ders_8'},
+                {'name': 'Hypers_1'},
+                {'name': 'Hypers_2'},
+                {'name': 'Hypers_3'},
+                {'name': 'Hypers_4'},
+                {'name': 'Hypers_5'},
+                {'name': 'Hypers_6'},
+                {'name': 'Hypers_7'},
+                {'name': 'Hypers_8'},
+                {'name': 'Hypos_1'},
+                {'name': 'Hypos_2'},
+                {'name': 'Hypos_3'},
+                {'name': 'Hypos_4'},
+                {'name': 'Hypos_5'},
+                {'name': 'Hypos_6'},
+                {'name': 'Hypos_7'},
+                {'name': 'Hypos_8'},
                 {'name': 'Vis_1'},
                 {'name': 'Vis_2'},
                 {'name': 'Vis_3'},
@@ -217,7 +258,9 @@ class k2a:
                 {'name': 'Vis_7'},
                 {'name': 'Vis_8'},
                 {'name': 'IPA'},
-                {'name': 'Pic'},
+                {'name': 'Pic_1'},
+                {'name': 'Pic_2'},
+                {'name': 'Pic_3'},
                 {'name': 'Speech'}
                 ],
             templates = [

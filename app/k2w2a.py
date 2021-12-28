@@ -6,7 +6,7 @@ import re
 import pandas as pd
 import numpy as np
 import requests
-# import genanki
+import genanki
 from bs4 import BeautifulSoup as bs
 import lxml
 # from time import sleep
@@ -59,7 +59,10 @@ class WikiParser:
 
         # get all picture links
         for pic in soup.findAll(class_='thumbinner'):
-            o_pic_links.append(pic.a['href'])
+            # pdb.set_trace()
+            if pic.find('a') is not None:
+                o_pic_links.append(pic.a['href'])
+
         wordbase.data.loc[(stem, i), 'pics'] = o_pic_links
 
         # get first pronunciation link
@@ -89,8 +92,11 @@ class WikiParser:
 
             o_var.append(french.text + '\n')
 
-            if len(french.text) > 3:
+            opts = ['Nom', 'Adjectif', 'Adverbe', 'Verbe', 'Préposition', 'Interjection']
+            if any(x in french.text for x in opts):
 
+                # get the POS
+                #pdb.set_trace()
                 if 'Nom' in french.text:
                     # sing vs plurs and ipa
                     if french.parent.parent.find_next_sibling('table') is not None:
@@ -104,14 +110,17 @@ class WikiParser:
 
                 elif 'Adj' in french.text:
                     # sing vs plurs and ipa
-                    item1 = french.parent.parent.find_next_sibling('table')
-                    for a in item1.findAll('a'):
-                        o_vers.append(a.text)
+                    if french.parent.parent.find_next_sibling('table') is not None:
 
-                    for (ind, out) in zip(o_verbs, o_vers):
+                        item1 = french.parent.parent.find_next_sibling('table')
+                        for a in item1.findAll('a'):
+                                o_vers.append(a.text)
+
+                    for (ind, out) in zip(o_nouns, o_vers):
                         wordbase.data.loc[(stem, i), ind] = out
 
                 else:
+                    # pdb.set_trace()
                     if french.parent.parent.find_next_sibling('p').\
                                                     find(class_='API') is not None:
                         wordbase.data.loc[(stem, i), 'ns-ipa'] = french.parent.\
@@ -141,7 +150,8 @@ class WikiParser:
                 wordbase.data.loc[(stem, i), 'sents'] = o_sents
 
                 nextNode = french.parent.parent
-                while True:
+                while nextNode is not None:
+
                     nextNode = nextNode.nextSibling
                     try:
                         tag_name = nextNode.name
@@ -189,7 +199,7 @@ class WikiParser:
     # run the parse over n-length word list and save results to parquet
     def parse_many(self, wordlist):
         o_data = Database()
-        for i in range(1170,1200):
+        for i in range(0,23810):
             print(i)
             stem, freq = wordlist.loc[i, ['LEMMAS', 'G1-5 U']]
             print(stem + ' ' + str(freq))
@@ -208,8 +218,159 @@ class WikiParser:
         return pframe
 
     # make a deck out of a DataFrame
-    def make_deck(self):
-        return True
+    def make_deck(self, frame):
+        frame = frame.replace(np.nan, '', regex=True)
+
+        # read CSS file for card formatting
+        css_file = open('styles/card_style.txt')
+        css_str = css_file.read()
+        css_file.close()
+
+        front_file = open('styles/front_format.txt')
+        front_str = front_file.read()
+        front_file.close()
+
+        back_file = open('styles/back_format.txt')
+        back_str = back_file.read()
+        back_file.close()
+
+        front_file_b = open('styles/front_format_b.txt')
+        front_str_b = front_file_b.read()
+        front_file_b.close()
+
+        back_file_b = open('styles/back_format_b.txt')
+        back_str_b = back_file_b.read()
+        back_file_b.close()
+
+        # %% make a card object with data from each row of dataframe
+        # make sure to check for existing card, no repeats important
+        my_deck = genanki.Deck(
+            5800457367,
+            'Français: Vocabulaire v2.0'
+            )
+
+        my_model = genanki.Model(
+            8756083568,
+            'Autogen Fr Definition Model',
+            fields = [
+                {'name': 'Stem'},
+                {'name': 'Freq'},
+                {'name': 'IPA'},
+                {'name': 'Pic_1'},
+                {'name': 'Pic_2'},
+                {'name': 'Pic_3'},
+                {'name': 'Speech'},
+                {'name': 'POS_1'},
+                {'name': 'POS_2'},
+                {'name': 'POS_3'},
+                {'name': 'POS_4'},
+                {'name': 'POS_5'},
+                {'name': 'POS_6'},
+                {'name': 'POS_7'},
+                {'name': 'POS_8'},
+                {'name': 'Def_1'},
+                {'name': 'Def_2'},
+                {'name': 'Def_3'},
+                {'name': 'Def_4'},
+                {'name': 'Def_5'},
+                {'name': 'Def_6'},
+                {'name': 'Def_7'},
+                {'name': 'Def_8'},
+                {'name': 'Sent_1'},
+                {'name': 'Sent_2'},
+                {'name': 'Sent_3'},
+                {'name': 'Sent_4'},
+                {'name': 'Sent_5'},
+                {'name': 'Sent_6'},
+                {'name': 'Sent_7'},
+                {'name': 'Sent_8'},
+                {'name': 'Syns_1'},
+                {'name': 'Syns_2'},
+                {'name': 'Syns_3'},
+                {'name': 'Syns_4'},
+                {'name': 'Syns_5'},
+                {'name': 'Syns_6'},
+                {'name': 'Syns_7'},
+                {'name': 'Syns_8'},
+                {'name': 'Ants_1'},
+                {'name': 'Ants_2'},
+                {'name': 'Ants_3'},
+                {'name': 'Ants_4'},
+                {'name': 'Ants_5'},
+                {'name': 'Ants_6'},
+                {'name': 'Ants_7'},
+                {'name': 'Ants_8'},
+                {'name': 'Ders_1'},
+                {'name': 'Ders_2'},
+                {'name': 'Ders_3'},
+                {'name': 'Ders_4'},
+                {'name': 'Ders_5'},
+                {'name': 'Ders_6'},
+                {'name': 'Ders_7'},
+                {'name': 'Ders_8'},
+                {'name': 'Hypers_1'},
+                {'name': 'Hypers_2'},
+                {'name': 'Hypers_3'},
+                {'name': 'Hypers_4'},
+                {'name': 'Hypers_5'},
+                {'name': 'Hypers_6'},
+                {'name': 'Hypers_7'},
+                {'name': 'Hypers_8'},
+                {'name': 'Hypos_1'},
+                {'name': 'Hypos_2'},
+                {'name': 'Hypos_3'},
+                {'name': 'Hypos_4'},
+                {'name': 'Hypos_5'},
+                {'name': 'Hypos_6'},
+                {'name': 'Hypos_7'},
+                {'name': 'Hypos_8'},
+                {'name': 'Vis_1'},
+                {'name': 'Vis_2'},
+                {'name': 'Vis_3'},
+                {'name': 'Vis_4'},
+                {'name': 'Vis_5'},
+                {'name': 'Vis_6'},
+                {'name': 'Vis_7'},
+                {'name': 'Vis_8'}
+                ],
+            templates = [
+                {'name': 'Comprehension',
+                 'qfmt': front_str,
+                 'afmt': back_str,
+                 },
+                {'name': 'Production',
+                 'qfmt': front_str_b,
+                 'afmt': back_str_b
+                 }
+                ],
+            css = css_str
+            )
+
+        for index, row in frame.iterrows():
+            my_note = genanki.Note(
+                model = my_model,
+                fields = [row['input'],
+                          row['pos_1'],
+                          row['pos_2'],
+                          row['pos_3'],
+                          row['pos_4'],
+                          row['def_1'],
+                          row['def_2'],
+                          row['def_3'],
+                          row['def_4'],
+                          row['sent_1'],
+                          row['sent_2'],
+                          row['sent_3'],
+                          row['sent_4'],
+                          row['ipa'],
+                          row['pic'],
+                          row['speech']
+                          ]
+                )
+            my_deck.add_note(my_note)
+
+        # %% export card to anki? should be automatic
+        genanki.Package(my_deck).write_to_file('output.apkg')
 
     # write an Anki deck to a file
     def write_deck(self, deck):
@@ -248,7 +409,7 @@ class WikiParser:
 # object to hold all page information
 class Page:
     def __init__(self, word):
-        n_variants = 10
+        n_variants = 8
 
         stems = np.array([word] * n_variants)
         total = np.array([x for x in range(0, n_variants)])
@@ -276,13 +437,27 @@ class Database:
     def read_data(self):
         return self
 
-wp = WikiParser()
-frame = wp.get_word_parquet(file_loc='data/wlist.gzip')
-print(frame)
 
-# test = WikiParser()
+
+
+# wp = WikiParser()
+# frame = wp.get_word_parquet(file_loc='data/wlist.gzip')
+# print(frame)
+# for index, row in frame.iterrows():
+#     print(row)
+
+# pdb.set_trace()
+
+
+
+test = WikiParser()
+# # test.word_list_to_parquet()
 # frame = test.get_word_parquet()
 # test.parse_many(frame)
+
+frame2 = test.get_word_parquet(file_loc='data/wlist.gzip')
+for index, row in frame2.iterrows():
+    print(row)
 
 # stem = 'botte'
 # website = WikiParser.get_source(stem)
@@ -301,23 +476,3 @@ print(frame)
 # o_data.add_page(y)
 #
 # print(o_data.db)
-
-
-# frame = WikiParser.get_word_parquet()
-# o_data = Database()
-# for i in range(1000,1100):
-#     print(i)
-#     stem = frame.loc[i, 'LEMMAS']
-#     print(stem)
-#     website = WikiParser.get_source(stem)
-#     x = Page(stem)
-#     WikiParser.parse_page(stem, website, x)
-#     o_data.add_page(x)
-#
-#
-# o_data.db.to_parquet('data/wlist.gzip', compression ='gzip')
-#
-#
-# pframe = pd.read_parquet('data/wlist.gzip')
-#
-# print(pframe)
