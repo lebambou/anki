@@ -249,9 +249,11 @@ class WikiParser:
             'Français: Vocabulaire v2.0'
             )
 
+        # Vis = 'invisible' for empty entry
+        # Vis = '' for valid entry
         my_model = genanki.Model(
             8756083568,
-            'Autogen Fr Definition Model',
+            'Autogen Fr Definition Model v2.0',
             fields = [
                 {'name': 'Stem'},
                 {'name': 'Freq'},
@@ -346,31 +348,115 @@ class WikiParser:
             css = css_str
             )
 
-        for index, row in frame.iterrows():
+        # for index, row in frame.iterrows():
+        #     my_note = genanki.Note(
+        #         model = my_model,
+        #         fields = [row[''],
+        #                   row['']
+        #                   ]
+        #         )
+
+        for key_stem, word_df in frame.groupby(level=0, sort=False):
+            print(key_stem)
+
+            # take only the first eight entries to avoid duplicates
+            word_df = word_df.head(8)
+
+            pdb.set_trace()
+
             my_note = genanki.Note(
                 model = my_model,
-                fields = [row['input'],
-                          row['pos_1'],
-                          row['pos_2'],
-                          row['pos_3'],
-                          row['pos_4'],
-                          row['def_1'],
-                          row['def_2'],
-                          row['def_3'],
-                          row['def_4'],
-                          row['sent_1'],
-                          row['sent_2'],
-                          row['sent_3'],
-                          row['sent_4'],
-                          row['ipa'],
-                          row['pic'],
-                          row['speech']
+                fields = [key_stem, # stem
+
+
+######################## HERE's WHERE YOU'RE WOKRING ##########################
+
+
+                          word_df.loc[(key_stem, 0), 'freq'], # frequency
+                          # word_df.loc[(key_stem, 0), ''], # ipa
+                          # row[''], # pic 1
+                          # row[''], # pic 2
+                          # row[''], # pic 3
+                          # row[''], # speech
+                          # row[''], # pos
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''], # defs
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''], # sents
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''], # syns
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''], # ants
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''], # ders
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''], # hypers
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''], # hypos
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''], # vis
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
+                          # row[''],
                           ]
                 )
-            my_deck.add_note(my_note)
+
+            # my_deck.add_note(my_note)
 
         # %% export card to anki? should be automatic
-        genanki.Package(my_deck).write_to_file('output.apkg')
+        # genanki.Package(my_deck).write_to_file('output.apkg')
 
     # write an Anki deck to a file
     def write_deck(self, deck):
@@ -456,8 +542,12 @@ test = WikiParser()
 # test.parse_many(frame)
 
 frame2 = test.get_word_parquet(file_loc='data/wlist.gzip')
-for index, row in frame2.iterrows():
-    print(row)
+# pdb.set_trace()
+# for key_stem, word_df in frame2.groupby(level=0, sort=False):
+#     pdb.set_trace()
+#     print(key_stem)
+
+test.make_deck(frame2)
 
 # stem = 'botte'
 # website = WikiParser.get_source(stem)
