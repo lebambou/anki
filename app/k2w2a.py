@@ -220,7 +220,7 @@ class WikiParser:
     # make a deck out of a DataFrame
     def make_deck(self, frame):
         frame = frame.replace(np.nan, '', regex=True)
-
+        # pdb.set_trace()
         # read CSS file for card formatting
         css_file = open('styles/card_style.txt')
         css_str = css_file.read()
@@ -302,14 +302,14 @@ class WikiParser:
                 {'name': 'Ants_6'},
                 {'name': 'Ants_7'},
                 {'name': 'Ants_8'},
-                {'name': 'Ders_1'},
-                {'name': 'Ders_2'},
-                {'name': 'Ders_3'},
-                {'name': 'Ders_4'},
-                {'name': 'Ders_5'},
-                {'name': 'Ders_6'},
-                {'name': 'Ders_7'},
-                {'name': 'Ders_8'},
+                {'name': 'Derivs_1'},
+                {'name': 'Derivs_2'},
+                {'name': 'Derivs_3'},
+                {'name': 'Derivs_4'},
+                {'name': 'Derivs_5'},
+                {'name': 'Derivs_6'},
+                {'name': 'Derivs_7'},
+                {'name': 'Derivs_8'},
                 {'name': 'Hypers_1'},
                 {'name': 'Hypers_2'},
                 {'name': 'Hypers_3'},
@@ -348,122 +348,171 @@ class WikiParser:
             css = css_str
             )
 
-        # for index, row in frame.iterrows():
-        #     my_note = genanki.Note(
-        #         model = my_model,
-        #         fields = [row[''],
-        #                   row['']
-        #                   ]
-        #         )
-
+        lpl = 0
         for key_stem, word_df in frame.groupby(level=0, sort=False):
-            print(key_stem)
+            lpl = lpl + 1
+            print(lpl)
 
             # take only the first eight entries to avoid duplicates
             word_df = word_df.head(8)
 
-            pdb.set_trace()
+            ipa = word_df.loc[(key_stem, 0), 'ns-ipa'] +\
+                  word_df.loc[(key_stem, 0), 'npl-ipa'] +\
+                  word_df.loc[(key_stem, 0), 'adjm-ipa'] +\
+                  word_df.loc[(key_stem, 0), 'adjmp-ipa']
+
+
+
+            # pdb.set_trace()
+
+            # clean up and store defs
+            defs = np.empty(8, dtype='object')
+            for i in range(8):
+                temp = word_df.loc[(key_stem, i), 'defs']
+                if type(temp) is not str:
+                    # eliminate empty strings
+                    temp = temp[np.where(temp != '')]
+
+                    # eliminate extra carriage returns and add one
+                    for j in range(len(temp)):
+                        temp[j] = temp[j].strip() + '\n'
+
+                # collapse it all
+                temp_tog = ''.join(temp)
+
+                # pdb.set_trace()
+                defs[i] = temp_tog
+
+            # clean up and store sents
+            sents = np.empty(8, dtype='object')
+            for i in range(8):
+                # pdb.set_trace()
+                temp = word_df.loc[(key_stem, i), 'sents']
+                if len(temp) > 0:
+                    # eliminate empty strings
+                    temp = temp[np.where(temp != '')]
+
+                    # just grab the first sentence for now
+                    try:
+                        sents[i] = temp[0]
+                    except IndexError:
+                        sents[i] = ''
+                # pdb.set_trace()
+                else:
+                    sents[i] = ''
+
+            # pdb.set_trace()
+            pics = word_df.loc[(key_stem, 0), 'pics'][0:3]
+            pics_ar = np.array(['','',''])
+
+            # if lpl == 1241: pdb.set_trace()
+
+            for i in range(len(pics)):
+                pics_ar[i] = pics[i]
+
+            poses = np.empty(8, dtype = 'object')
+            vises = np.empty(8, dtype = 'object')
+            for i in range(8):
+                poses[i] = word_df.loc[(key_stem, i), 'pos']
+                if len(poses[i]) < 1:
+                    vises[i] = 'invisible'
+                else:
+                    vises[i] = ''
+
+            # pdb.set_trace()
 
             my_note = genanki.Note(
                 model = my_model,
                 fields = [key_stem, # stem
-
-
-######################## HERE's WHERE YOU'RE WOKRING ##########################
-
-
-                          word_df.loc[(key_stem, 0), 'freq'], # frequency
-                          # word_df.loc[(key_stem, 0), ''], # ipa
-                          # row[''], # pic 1
-                          # row[''], # pic 2
-                          # row[''], # pic 3
-                          # row[''], # speech
-                          # row[''], # pos
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''], # defs
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''], # sents
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''], # syns
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''], # ants
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''], # ders
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''], # hypers
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''], # hypos
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''], # vis
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
-                          # row[''],
+                          str(word_df.loc[(key_stem, 0), 'freq']), # frequency
+                          ipa, # ipa
+                          pics_ar[0], # pic 1
+                          pics_ar[1], # pic 2
+                          pics_ar[2], # pic 3
+                          word_df.loc[(key_stem, 0), 'audio'], # speech
+                          poses[0], # poses
+                          poses[1],
+                          poses[2],
+                          poses[3],
+                          poses[4],
+                          poses[5],
+                          poses[6],
+                          poses[7],
+                          defs[0], # defs
+                          defs[1],
+                          defs[2],
+                          defs[3],
+                          defs[4],
+                          defs[5],
+                          defs[6],
+                          defs[7],
+                          sents[0], # sents
+                          sents[1],
+                          sents[2],
+                          sents[3],
+                          sents[4],
+                          sents[5],
+                          sents[6],
+                          sents[7],
+                          ' ,'.join(word_df.loc[(key_stem, 0), 'syns']), # syns
+                          ' ,'.join(word_df.loc[(key_stem, 1), 'syns']),
+                          ' ,'.join(word_df.loc[(key_stem, 2), 'syns']),
+                          ' ,'.join(word_df.loc[(key_stem, 3), 'syns']),
+                          ' ,'.join(word_df.loc[(key_stem, 4), 'syns']),
+                          ' ,'.join(word_df.loc[(key_stem, 5), 'syns']),
+                          ' ,'.join(word_df.loc[(key_stem, 6), 'syns']),
+                          ' ,'.join(word_df.loc[(key_stem, 7), 'syns']),
+                          ' ,'.join(word_df.loc[(key_stem, 0), 'ants']), # ants
+                          ' ,'.join(word_df.loc[(key_stem, 1), 'ants']),
+                          ' ,'.join(word_df.loc[(key_stem, 2), 'ants']),
+                          ' ,'.join(word_df.loc[(key_stem, 3), 'ants']),
+                          ' ,'.join(word_df.loc[(key_stem, 4), 'ants']),
+                          ' ,'.join(word_df.loc[(key_stem, 5), 'ants']),
+                          ' ,'.join(word_df.loc[(key_stem, 6), 'ants']),
+                          ' ,'.join(word_df.loc[(key_stem, 7), 'ants']),
+                          ' ,'.join(word_df.loc[(key_stem, 0), 'derivs']), # derivs
+                          ' ,'.join(word_df.loc[(key_stem, 1), 'derivs']),
+                          ' ,'.join(word_df.loc[(key_stem, 2), 'derivs']),
+                          ' ,'.join(word_df.loc[(key_stem, 3), 'derivs']),
+                          ' ,'.join(word_df.loc[(key_stem, 4), 'derivs']),
+                          ' ,'.join(word_df.loc[(key_stem, 5), 'derivs']),
+                          ' ,'.join(word_df.loc[(key_stem, 6), 'derivs']),
+                          ' ,'.join(word_df.loc[(key_stem, 7), 'derivs']),
+                          ' ,'.join(word_df.loc[(key_stem, 0), 'hypers']), # hypers
+                          ' ,'.join(word_df.loc[(key_stem, 1), 'hypers']),
+                          ' ,'.join(word_df.loc[(key_stem, 2), 'hypers']),
+                          ' ,'.join(word_df.loc[(key_stem, 3), 'hypers']),
+                          ' ,'.join(word_df.loc[(key_stem, 4), 'hypers']),
+                          ' ,'.join(word_df.loc[(key_stem, 5), 'hypers']),
+                          ' ,'.join(word_df.loc[(key_stem, 6), 'hypers']),
+                          ' ,'.join(word_df.loc[(key_stem, 7), 'hypers']),
+                          ' ,'.join(word_df.loc[(key_stem, 0), 'hypos']), # hypos
+                          ' ,'.join(word_df.loc[(key_stem, 1), 'hypos']),
+                          ' ,'.join(word_df.loc[(key_stem, 2), 'hypos']),
+                          ' ,'.join(word_df.loc[(key_stem, 3), 'hypos']),
+                          ' ,'.join(word_df.loc[(key_stem, 4), 'hypos']),
+                          ' ,'.join(word_df.loc[(key_stem, 5), 'hypos']),
+                          ' ,'.join(word_df.loc[(key_stem, 6), 'hypos']),
+                          ' ,'.join(word_df.loc[(key_stem, 7), 'hypos']),
+                          vises[0], # vises
+                          vises[1],
+                          vises[2],
+                          vises[3],
+                          vises[4],
+                          vises[5],
+                          vises[6],
+                          vises[7],
                           ]
                 )
 
-            # my_deck.add_note(my_note)
+            my_deck.add_note(my_note)
 
         # %% export card to anki? should be automatic
-        # genanki.Package(my_deck).write_to_file('output.apkg')
+        # pdb.set_trace()
+        genanki.Package(my_deck).write_to_file('data/output.apkg')
 
     # write an Anki deck to a file
     def write_deck(self, deck):
-        return True
-
-    # create single comp/prod flashcard from pd dataframe
-    def make_flashcard(self, frame):
         return True
 
     # create single conjugation flashcard from pd DataFrame
@@ -548,21 +597,3 @@ frame2 = test.get_word_parquet(file_loc='data/wlist.gzip')
 #     print(key_stem)
 
 test.make_deck(frame2)
-
-# stem = 'botte'
-# website = WikiParser.get_source(stem)
-# x = Page(stem)
-# WikiParser.parse_page(stem, website, x)
-# # print(x.data)
-#
-# stem = 'beau'
-# website = WikiParser.get_source(stem)
-# y = Page(stem)
-# WikiParser.parse_page(stem, website, y)
-# # print(x.data)
-#
-# o_data = Database()
-# o_data.add_page(x)
-# o_data.add_page(y)
-#
-# print(o_data.db)

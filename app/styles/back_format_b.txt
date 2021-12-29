@@ -2,25 +2,63 @@
 
 <hr>
 
-<p><b id="word">{{Word_1}}</b> <span id="pos">{{POS_1}}</span></p>
-<p>{{Def_1}}</p>
-<p><i>{{Sent_1}}</i></p>
-
-<p><b id="word">{{Word_2}}</b> <span id="pos">{{POS_2}}</span></p>
-<p>{{Def_2}}</p>
-<p><i>{{Sent_2}}</i></p>
-
-<p><b id="word">{{Word_3}}</b> <span id="pos">{{POS_3}}</span></p>
-<p>{{Def_3}}</p>
-<p><i>{{Sent_3}}</i></p>
-
-<p><b id="word">{{Word_4}}</b> <span id="pos">{{POS_4}}</span></p>
-<p>{{Def_4}}</p>
-<p><i>{{Sent_4}}</i></p>
-
-<img src={{Pic}} alt="Image failed to load.">
-
 <audio controls>
     <source src={{Speech}} type="audio/mpeg">
     Anki does not support the Audio tag.
 </audio>
+
+<img src={{Pic_1}} alt="Image failed to load.">
+<img src={{Pic_2}} alt="Image failed to load.">
+<img src={{Pic_3}} alt="Image failed to load.">
+
+<div class="grid-container">
+
+<div class="grid-element {{Vis_1}}">
+<p><b id="word">{{Stem}}</b> <span id="pos">{{POS_1}}</span></p>
+<p>{{Def_1}}</p>
+<p><i>{{Sent_1}}</i></p>
+</div>
+
+<div class="grid-element {{Vis_2}}">
+<p><b id="word">{{Stem}}</b> <span id="pos">{{POS_2}}</span></p>
+<p>{{Def_2}}</p>
+<p><i>{{Sent_2}}</i></p>
+</div>
+
+<div class="grid-element {{Vis_3}}">
+<p><b id="word">{{Stem}}</b> <span id="pos">{{POS_3}}</span></p>
+<p>{{Def_3}}</p>
+<p><i>{{Sent_3}}</i></p>
+</div>
+
+<div class="grid-element {{Vis_4}}">
+<p><b id="word">{{Stem}}</b> <span id="pos">{{POS_4}}</span></p>
+<p>{{Def_4}}</p>
+<p><i>{{Sent_4}}</i></p>
+</div>
+
+<div class="grid-element {{Vis_5}}">
+<p><b id="word">{{Stem}}</b> <span id="pos">{{POS_5}}</span></p>
+<p>{{Def_5}}</p>
+<p><i>{{Sent_5}}</i></p>
+</div>
+
+<div class="grid-element {{Vis_6}}">
+<p><b id="word">{{Stem}}</b> <span id="pos">{{POS_6}}</span></p>
+<p>{{Def_6}}</p>
+<p><i>{{Sent_6}}</i></p>
+</div>
+
+<div class="grid-element {{Vis_7}}">
+<p><b id="word">{{Stem}}</b> <span id="pos">{{POS_7}}</span></p>
+<p>{{Def_7}}</p>
+<p><i>{{Sent_7}}</i></p>
+</div>
+
+<div class="grid-element {{Vis_8}}">
+<p><b id="word">{{Stem}}</b> <span id="pos">{{POS_8}}</span></p>
+<p>{{Def_8}}</p>
+<p><i>{{Sent_8}}</i></p>
+</div>
+
+</div>
