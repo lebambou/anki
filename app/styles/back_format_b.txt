@@ -1,15 +1,18 @@
 <p><b id="stem">{{Stem}}</b><div id="ipa">{{IPA}}</div></p>
 
+<a href="https://fr.wiktionary.org/wiki/{{Stem}}">Wiktionnaire</a>
+
 <hr>
 
 <audio controls>
     <source src={{Speech}} type="audio/mpeg">
     Anki does not support the Audio tag.
 </audio>
+<br />
 
-<img src={{Pic_1}} alt="Image failed to load.">
-<img src={{Pic_2}} alt="Image failed to load.">
-<img src={{Pic_3}} alt="Image failed to load.">
+<embed src="{{Pic_1}}">
+<embed src="{{Pic_2}}">
+<embed src="{{Pic_3}}">
 
 <div class="grid-container">
 
@@ -17,48 +20,56 @@
 <p><b id="word">{{Stem}}</b> <span id="pos">{{POS_1}}</span></p>
 <p>{{Def_1}}</p>
 <p><i>{{Sent_1}}</i></p>
+<p><b>S: </b>{{Syns_1}} <b>A: </b>{{Ants_1}} <b>D: </b> {{Derivs_1}} <b>Hr: </b> {{Hypers_1}} <b>Ho:</b> {{Hypos_1}}</p>
 </div>
 
 <div class="grid-element {{Vis_2}}">
 <p><b id="word">{{Stem}}</b> <span id="pos">{{POS_2}}</span></p>
 <p>{{Def_2}}</p>
 <p><i>{{Sent_2}}</i></p>
+<p><b>S: </b>{{Syns_2}} <b>A: </b>{{Ants_2}} <b>D: </b> {{Derivs_2}} <b>Hr: </b> {{Hypers_2}} <b>Ho:</b> {{Hypos_2}}</p>
 </div>
 
 <div class="grid-element {{Vis_3}}">
 <p><b id="word">{{Stem}}</b> <span id="pos">{{POS_3}}</span></p>
 <p>{{Def_3}}</p>
 <p><i>{{Sent_3}}</i></p>
+<p><b>S: </b>{{Syns_3}} <b>A: </b>{{Ants_3}} <b>D: </b> {{Derivs_3}} <b>Hr: </b> {{Hypers_3}} <b>Ho:</b> {{Hypos_3}}</p>
 </div>
 
 <div class="grid-element {{Vis_4}}">
 <p><b id="word">{{Stem}}</b> <span id="pos">{{POS_4}}</span></p>
 <p>{{Def_4}}</p>
 <p><i>{{Sent_4}}</i></p>
+<p><b>S: </b>{{Syns_4}} <b>A: </b>{{Ants_4}} <b>D: </b> {{Derivs_4}} <b>Hr: </b> {{Hypers_4}} <b>Ho:</b> {{Hypos_4}}</p>
 </div>
 
 <div class="grid-element {{Vis_5}}">
 <p><b id="word">{{Stem}}</b> <span id="pos">{{POS_5}}</span></p>
 <p>{{Def_5}}</p>
 <p><i>{{Sent_5}}</i></p>
+<p><b>S: </b>{{Syns_5}} <b>A: </b>{{Ants_5}} <b>D: </b> {{Derivs_5}} <b>Hr: </b> {{Hypers_5}} <b>Ho:</b> {{Hypos_5}}</p>
 </div>
 
 <div class="grid-element {{Vis_6}}">
 <p><b id="word">{{Stem}}</b> <span id="pos">{{POS_6}}</span></p>
 <p>{{Def_6}}</p>
 <p><i>{{Sent_6}}</i></p>
+<p><b>S: </b>{{Syns_6}} <b>A: </b>{{Ants_6}} <b>D: </b> {{Derivs_6}} <b>Hr: </b> {{Hypers_6}} <b>Ho:</b> {{Hypos_6}}</p>
 </div>
 
 <div class="grid-element {{Vis_7}}">
 <p><b id="word">{{Stem}}</b> <span id="pos">{{POS_7}}</span></p>
 <p>{{Def_7}}</p>
 <p><i>{{Sent_7}}</i></p>
+<p><b>S: </b>{{Syns_7}} <b>A: </b>{{Ants_7}} <b>D: </b> {{Derivs_7}} <b>Hr: </b> {{Hypers_7}} <b>Ho:</b> {{Hypos_7}}</p>
 </div>
 
 <div class="grid-element {{Vis_8}}">
 <p><b id="word">{{Stem}}</b> <span id="pos">{{POS_8}}</span></p>
 <p>{{Def_8}}</p>
 <p><i>{{Sent_8}}</i></p>
+<p><b>S: </b>{{Syns_8}} <b>A: </b>{{Ants_8}} <b>D: </b> {{Derivs_8}} <b>Hr: </b> {{Hypers_8}} <b>Ho:</b> {{Hypos_8}}</p>
 </div>
 
 </div>

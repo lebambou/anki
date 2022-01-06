@@ -1,1 +1,7 @@
 <p>{{Def_1}}</p>
+
+<embed src="{{Pic_1}}">
+<embed src="{{Pic_2}}">
+<embed src="{{Pic_3}}">
+
+{{type:Stem}}

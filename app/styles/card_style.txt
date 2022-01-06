@@ -8,9 +8,10 @@ html { overflow: scroll; overflow-x: hidden; }
 
 /* APPLIES TO THE WHOLE CARD */
 .card {
+    max-width: 700px;
     font-family: Oxygen;
 	margin: 0 auto; /* CENTERS THE CARD IN THE MIDDLE OF THE WINDOW */
-    font-size: 18px; /* FONT SIZE */
+    font-size: 14px; /* FONT SIZE */
     text-align: center; /* ALIGN TEXT */
     color: #D7DEE9; /* FONT COLOR */
     line-height: 1.6em;
@@ -27,7 +28,7 @@ html { overflow: scroll; overflow-x: hidden; }
 .grid-element {
   padding: 5px;
   color: #fff;
-  border: 1px solid #fff;
+
 }
 
 .invisible {
@@ -58,6 +59,14 @@ html { overflow: scroll; overflow-x: hidden; }
 img { display: block; max-width: 100%; max-height: none; margin-left: auto; margin: 10px auto 10px auto;}
 tr {font-size: 12px; }
 
+embed {max-width: 230px }
+
+embed[src=""]{
+	display: none;
+}
+
+
+
 /* COLOR ACCENTS FOR BOLD-ITALICS-UNDERLINE */
 b { color: #C6F5C6 !important; } /* BOLD STYLE */
 u { text-decoration: none; color: #5EB3B3;} /* UNDERLINE STYLE */
@@ -70,13 +79,13 @@ a { color: LightGray !important; text-decoration: none; font-size: 10px; font-st
 }
 
 #pos {
-    font-size: 28px;
+    font-size: 20px;
     font-variant: small-caps;
     color: #15bf7f;
 }
 
 #word {
-    font-size: 24px;
+    font-size: 22px;
 }
 
 #ipa {

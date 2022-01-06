@@ -60,8 +60,9 @@ class WikiParser:
         # get all picture links
         for pic in soup.findAll(class_='thumbinner'):
             # pdb.set_trace()
-            if pic.find('a') is not None:
-                o_pic_links.append(pic.a['href'])
+            if pic.find('img') is not None:
+                o_pic_links.append(pic.img['src'])
+                print(pic.img['src'])
 
         wordbase.data.loc[(stem, i), 'pics'] = o_pic_links
 
@@ -108,6 +109,8 @@ class WikiParser:
                     for (ind, out) in zip(o_nouns, o_vers):
                         wordbase.data.loc[(stem, i), ind] = out
 
+
+
                 elif 'Adj' in french.text:
                     # sing vs plurs and ipa
                     if french.parent.parent.find_next_sibling('table') is not None:
@@ -126,7 +129,15 @@ class WikiParser:
                         wordbase.data.loc[(stem, i), 'ns-ipa'] = french.parent.\
                                     parent.find_next_sibling('p').find(class_='API').text
 
-                wordbase.data.loc[(stem, i), 'pos'] = french.text
+                # pdb.set_trace()
+
+                item3 = ''
+                if french.parent.parent.find_next(class_='ligne-de-forme') is not None:
+                    item3 = french.parent.parent.find_next(class_='ligne-de-forme').text
+
+
+                # print(french.text + ' ' + item3)
+                wordbase.data.loc[(stem, i), 'pos'] = french.text + ' ' + item3
 
                 # get defs and sents
                 item2 = french.parent.parent.find_next_sibling('ol')
@@ -375,7 +386,7 @@ class WikiParser:
 
                     # eliminate extra carriage returns and add one
                     for j in range(len(temp)):
-                        temp[j] = temp[j].strip() + '\n'
+                        temp[j] = temp[j].strip() + '<br>'
 
                 # collapse it all
                 temp_tog = ''.join(temp)
@@ -401,14 +412,17 @@ class WikiParser:
                 else:
                     sents[i] = ''
 
-            # pdb.set_trace()
+            # if lpl == 67:pdb.set_trace()
+
             pics = word_df.loc[(key_stem, 0), 'pics'][0:3]
-            pics_ar = np.array(['','',''])
+            pics_ar = np.empty(3, dtype='object')
 
             # if lpl == 1241: pdb.set_trace()
 
-            for i in range(len(pics)):
-                pics_ar[i] = pics[i]
+            for i in range(3):
+                if len(pics) > i:
+                    pics_ar[i] = pics[i]
+                else: pics_ar[i] = ''
 
             poses = np.empty(8, dtype = 'object')
             vises = np.empty(8, dtype = 'object')
@@ -420,6 +434,47 @@ class WikiParser:
                     vises[i] = ''
 
             # pdb.set_trace()
+            # if lpl == 35: pdb.set_trace()
+
+            synses = np.empty(8, dtype = 'object')
+            for i in range(8):
+                test = word_df.loc[(key_stem, i), 'syns']
+                if len(test) == 0:
+                    synses[i] = ''
+                else:
+                    synses[i] = test[0].replace('\n', ', ')
+
+            antes = np.empty(8, dtype = 'object')
+            for i in range(8):
+                test = word_df.loc[(key_stem, i), 'ants']
+                if len(test) == 0:
+                    antes[i] = ''
+                else:
+                    antes[i] = test[0].replace('\n', ', ')
+
+            derives = np.empty(8, dtype = 'object')
+            for i in range(8):
+                test = word_df.loc[(key_stem, i), 'derivs']
+                if len(test) == 0:
+                    derives[i] = ''
+                else:
+                    derives[i] = test[0].replace('\n', ', ')
+
+            hyperers = np.empty(8, dtype = 'object')
+            for i in range(8):
+                test = word_df.loc[(key_stem, i), 'hypers']
+                if len(test) == 0:
+                    hyperers[i] = ''
+                else:
+                    hyperers[i] = test[0].replace('\n', ', ')
+
+            hypoers = np.empty(8, dtype = 'object')
+            for i in range(8):
+                test = word_df.loc[(key_stem, i), 'hypos']
+                if len(test) == 0:
+                    hypoers[i] = ''
+                else:
+                    hypoers[i] = test[0].replace('\n', ', ')
 
             my_note = genanki.Note(
                 model = my_model,
@@ -454,46 +509,46 @@ class WikiParser:
                           sents[5],
                           sents[6],
                           sents[7],
-                          ' ,'.join(word_df.loc[(key_stem, 0), 'syns']), # syns
-                          ' ,'.join(word_df.loc[(key_stem, 1), 'syns']),
-                          ' ,'.join(word_df.loc[(key_stem, 2), 'syns']),
-                          ' ,'.join(word_df.loc[(key_stem, 3), 'syns']),
-                          ' ,'.join(word_df.loc[(key_stem, 4), 'syns']),
-                          ' ,'.join(word_df.loc[(key_stem, 5), 'syns']),
-                          ' ,'.join(word_df.loc[(key_stem, 6), 'syns']),
-                          ' ,'.join(word_df.loc[(key_stem, 7), 'syns']),
-                          ' ,'.join(word_df.loc[(key_stem, 0), 'ants']), # ants
-                          ' ,'.join(word_df.loc[(key_stem, 1), 'ants']),
-                          ' ,'.join(word_df.loc[(key_stem, 2), 'ants']),
-                          ' ,'.join(word_df.loc[(key_stem, 3), 'ants']),
-                          ' ,'.join(word_df.loc[(key_stem, 4), 'ants']),
-                          ' ,'.join(word_df.loc[(key_stem, 5), 'ants']),
-                          ' ,'.join(word_df.loc[(key_stem, 6), 'ants']),
-                          ' ,'.join(word_df.loc[(key_stem, 7), 'ants']),
-                          ' ,'.join(word_df.loc[(key_stem, 0), 'derivs']), # derivs
-                          ' ,'.join(word_df.loc[(key_stem, 1), 'derivs']),
-                          ' ,'.join(word_df.loc[(key_stem, 2), 'derivs']),
-                          ' ,'.join(word_df.loc[(key_stem, 3), 'derivs']),
-                          ' ,'.join(word_df.loc[(key_stem, 4), 'derivs']),
-                          ' ,'.join(word_df.loc[(key_stem, 5), 'derivs']),
-                          ' ,'.join(word_df.loc[(key_stem, 6), 'derivs']),
-                          ' ,'.join(word_df.loc[(key_stem, 7), 'derivs']),
-                          ' ,'.join(word_df.loc[(key_stem, 0), 'hypers']), # hypers
-                          ' ,'.join(word_df.loc[(key_stem, 1), 'hypers']),
-                          ' ,'.join(word_df.loc[(key_stem, 2), 'hypers']),
-                          ' ,'.join(word_df.loc[(key_stem, 3), 'hypers']),
-                          ' ,'.join(word_df.loc[(key_stem, 4), 'hypers']),
-                          ' ,'.join(word_df.loc[(key_stem, 5), 'hypers']),
-                          ' ,'.join(word_df.loc[(key_stem, 6), 'hypers']),
-                          ' ,'.join(word_df.loc[(key_stem, 7), 'hypers']),
-                          ' ,'.join(word_df.loc[(key_stem, 0), 'hypos']), # hypos
-                          ' ,'.join(word_df.loc[(key_stem, 1), 'hypos']),
-                          ' ,'.join(word_df.loc[(key_stem, 2), 'hypos']),
-                          ' ,'.join(word_df.loc[(key_stem, 3), 'hypos']),
-                          ' ,'.join(word_df.loc[(key_stem, 4), 'hypos']),
-                          ' ,'.join(word_df.loc[(key_stem, 5), 'hypos']),
-                          ' ,'.join(word_df.loc[(key_stem, 6), 'hypos']),
-                          ' ,'.join(word_df.loc[(key_stem, 7), 'hypos']),
+                          synses[0], # syns
+                          synses[1],
+                          synses[2],
+                          synses[3],
+                          synses[4],
+                          synses[5],
+                          synses[6],
+                          synses[7],
+                          antes[0], # antes
+                          antes[1],
+                          antes[2],
+                          antes[3],
+                          antes[4],
+                          antes[5],
+                          antes[6],
+                          antes[7],
+                          derives[0], # derives
+                          derives[1],
+                          derives[2],
+                          derives[3],
+                          derives[4],
+                          derives[5],
+                          derives[6],
+                          derives[7],
+                          hyperers[0], # hyperers
+                          hyperers[1],
+                          hyperers[2],
+                          hyperers[3],
+                          hyperers[4],
+                          hyperers[5],
+                          hyperers[6],
+                          hyperers[7],
+                          hypoers[0], # hypoers
+                          hypoers[1],
+                          hypoers[2],
+                          hypoers[3],
+                          hypoers[4],
+                          hypoers[5],
+                          hypoers[6],
+                          hypoers[7],
                           vises[0], # vises
                           vises[1],
                           vises[2],
@@ -583,12 +638,10 @@ class Database:
 
 # pdb.set_trace()
 
-
-
 test = WikiParser()
-# # test.word_list_to_parquet()
-# frame = test.get_word_parquet()
-# test.parse_many(frame)
+test.word_list_to_parquet()
+frame = test.get_word_parquet()
+test.parse_many(frame)
 
 frame2 = test.get_word_parquet(file_loc='data/wlist.gzip')
 # pdb.set_trace()
